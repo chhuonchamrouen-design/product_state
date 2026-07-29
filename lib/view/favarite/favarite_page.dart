@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:project/util/app_text.dart';
+//import 'package:project_state11_12/util/app_text.dart';
 
-
-class CartScreen extends StatefulWidget {
-  const CartScreen({super.key});
+class FavoriteScreen extends StatefulWidget {
+  const FavoriteScreen({super.key});
 
   @override
-  State<CartScreen> createState() => _CartScreenState();
+  State<FavoriteScreen> createState() => _FavoriteScreenState();
 }
 
-class _CartScreenState extends State<CartScreen> {
+class _FavoriteScreenState extends State<FavoriteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: AppText(text: "CartScreen", size: 20)),
+      body: Center(child: AppText(text: "Favorite", size: 20)),
     );
   }
 }
