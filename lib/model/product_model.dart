@@ -4,11 +4,11 @@ class ProductModel {
   String category;
   double oldprice;
   int discount;
-  String image;
+  List<String> image;
   int quantity;
   String rate;
   String view;
-  String description;
+  List <String>description;
   List<String> size;
   List<String> color;
   ProductModel({

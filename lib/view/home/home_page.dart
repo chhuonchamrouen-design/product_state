@@ -1,45 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
+import 'package:get/get.dart';
 import 'package:project/bloc/product_bloc.dart';
 import 'package:project/bloc/product_event.dart';
 import 'package:project/bloc/product_state.dart';
+import 'package:project/controller/controllmode.dart';
 import 'package:project/util/app_text.dart';
-
+import 'package:project/view/home/product_detail_screen.drt.dart';
+import 'package:provider/provider.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   @override
   State<HomePage> createState() => _HomePageState();
 }
-
 class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
     // dispatch the event so ProductBloc actually loads data from ProductController
-    context.read<ProductBloc>().add(LoadProduct());
+    context.read<ProductBloc>().add(LoadProduct()); //use for bloc
   }
-
+  //final controller = Provider.of<Controllmode>(context);
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<Controllmode>(context); // use for changeMode
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
         title: const Text(
-          "Shoping ching jang",
+          "Shop Sport",
           style: TextStyle(
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.bold,
             fontSize: 23,
-            color: Colors.blueAccent,
+            color: Colors.black,
           ),
         ),
         centerTitle: true,
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.shop)),
+          Switch(
+            value: controller.isDark,
+            onChanged: (Value) {
+              controller.changeTheme();
+            },
+          ),
         ],
       ),
       body: SingleChildScrollView(
+        //use for scroll
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -52,7 +61,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(30),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -110,9 +119,9 @@ class _HomePageState extends State<HomePage> {
             ),
             // image slideshow
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(20),
                 child: ImageSlideshow(
                   width: double.infinity,
                   height: 200,
@@ -120,15 +129,12 @@ class _HomePageState extends State<HomePage> {
                   indicatorColor: Colors.blue,
                   indicatorBackgroundColor: Colors.grey,
                   children: [
+                    Image.asset('assets/image/worl.jpg', fit: BoxFit.cover),
                     Image.asset(
-                      'assets/image/ching_jang.jpg',
+                      "assets/image/world cup.jpg",
                       fit: BoxFit.cover,
                     ),
-                    Image.asset('assets/image/jang.jpg', fit: BoxFit.cover),
-                    Image.asset(
-                      'assets/image/kbal khoch.jpg',
-                      fit: BoxFit.cover,
-                    ),
+                    Image.asset('assets/image/lejend.jpg', fit: BoxFit.cover),
                   ],
                   autoPlayInterval: 3000,
                   isLoop: true,
@@ -141,9 +147,10 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Popular Brand",
-                    style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+                  AppText(
+                    text: "Popular brand",
+                    fontWeight: FontWeight.bold,
+                    size: 22,
                   ),
                   TextButton(
                     onPressed: () {},
@@ -155,36 +162,72 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-
-            // Row(
-            //   children: [Container(height: 20, width: 20, color: Colors.blue)],
-            // ),
+            // this use bolc for get data form controller
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: 50,
+                child: BlocBuilder<ProductBloc, ProductState>(
+                  // point that importand
+                  builder: (context, state) {
+                    final categories = state.allProduct
+                        .map((p) => p.category)
+                        .toSet()
+                        .toList();
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: categories.length,
+                      itemBuilder: (context, index) {
+                        final category = categories[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Container(
+                            height: 50,
+                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: Colors.blue,
+                            ),
+                            child: Center(
+                              child: Text(
+                                category,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
             BlocBuilder<ProductBloc, ProductState>(
               builder: (context, state) {
-                // Show a loading indicator while the controller data hasn't arrived yet
                 if (state.allProduct.isEmpty) {
                   return const Padding(
                     padding: EdgeInsets.all(24.0),
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
-
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    // use the REAL length from the controller data, not a hardcoded 6
                     itemCount: state.allProduct.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10,
-                          childAspectRatio: 0.77,
+                          childAspectRatio: 0.80, //space  between pic name...
                         ),
                     itemBuilder: (context, index) {
-                      // grab each product straight from controller data via bloc state
                       final product = state.allProduct[index];
                       return Container(
                         decoration: BoxDecoration(
@@ -197,27 +240,25 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Stack(
                               children: [
-                                Expanded(
-                                  child: ClipRRect(
-                                    borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(12),
-                                    ),
-                                    child: Image.asset(
-                                      product.image,
-                                      height: 170,
-                                      width: double.infinity,
-                                      fit: BoxFit.contain,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              const Center(
-                                                child: Icon(Icons.broken_image),
-                                              ),
-                                    ),
+                                //use ClipRRect for borderon the pic
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(12),
+                                  ),
+                                  child: Image.asset(
+                                    product
+                                        .image[0], // show image at index 0 or first
+                                    height: 170,
+                                    width: double.infinity,
+                                    fit: BoxFit.contain,
                                   ),
                                 ),
                                 Positioned(
+                                  //top: 10,
+                                  //left: 10,
                                   child: Container(
                                     padding: EdgeInsets.symmetric(
+                                      //use for space for container
                                       vertical: 2,
                                       horizontal: 10,
                                     ),
@@ -226,7 +267,11 @@ class _HomePageState extends State<HomePage> {
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: AppText(
-                                      text: "${product.discount.toString()}%",
+                                      //that call wiget Apptext
+                                      text:
+                                          "${product.discount.toString()}%", //call discount
+                                      colors: Colors.white,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
@@ -276,27 +321,39 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                       const SizedBox(width: 6),
                                       Text(
-                                        "\$${(product.oldprice * (1 - product.discount / 100)).toStringAsFixed(2)}",
+                                        "\$${product.discount.toStringAsFixed(2)}",
                                         style: const TextStyle(
                                           color: Colors.blueAccent,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 13,
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 5),
-
-                                  Container(
-                                    padding: EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(10),
-                                        bottomRight: Radius.circular(10),
+                                      Spacer(),
+                                      Container(
+                                        padding: EdgeInsets.all(2),
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        child: GestureDetector(
+                                          //go to another page
+                                          //that show message
+                                          onTap: () {
+                                            Get.to(
+                                              ProductDetailScreen(
+                                                product: product,
+                                              ),
+                                            );
+                                          },
+                                          child: Icon(
+                                            Icons.add,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                    child: Icon(Icons.add, color: Colors.white),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -309,7 +366,7 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
-            const SizedBox(height: 20),
+            //const SizedBox(height: 20),
           ],
         ),
       ),

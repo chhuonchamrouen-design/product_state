@@ -29,10 +29,7 @@ class _MainHomePageState extends State<MainHomePage> {
           });
         },
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Home",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
             label: "Favorite",
@@ -41,10 +38,7 @@ class _MainHomePageState extends State<MainHomePage> {
             icon: Icon(Icons.shopping_cart),
             label: "Cart",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),
     );

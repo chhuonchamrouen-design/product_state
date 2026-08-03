@@ -1,22 +1,20 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:project/bloc/product_bloc.dart';
+import 'package:project/bloc/product_state.dart';
+import 'package:project/model/product_model.dart';
+import 'package:project/util/app_text.dart';
 class ProductDetailScreen extends StatefulWidget {
-  const ProductDetailScreen({super.key});
+  final ProductModel product;
+  const ProductDetailScreen({super.key, required this.product});
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
 }
-
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  String _selectedSize = 'L';
-  int _selectedColorIndex = 1;
+  String? _selectedSize;
+  int _selectedColorIndex = 0; 
   bool _isFavorite = false;
-  static const _sizes = ['S', 'M', 'L', 'XL'];
-  static const _colors = [
-    Color(0xFF1B1B1B), // black
-    Color(0xFF2C3968), // navy
-    Color(0xFF7A2E2E), // maroon
-    Color(0xFF9B9B9B), // grey
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,22 +23,303 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildAppBar(context),
+            _buildAppBar(context), 
             Expanded(
               child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [_buildImage(), _buildInfoCard()],
+               
+                child: BlocBuilder<ProductBloc, ProductState>(
+                  builder: (context, state) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Container(
+                            height: 320,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            alignment: Alignment.center,
+                            child: Image.asset(
+                              widget
+                                  .product
+                                  .image[_selectedColorIndex], // image for the selected color
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 20),
+                          padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color(0x14000000),
+                                blurRadius: 16,
+                                offset: Offset(0, -4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      widget
+                                          .product
+                                          .category, //call product category
+                                      style: TextStyle(
+                                        fontSize: 19,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.star,
+                                        size: 16,
+                                        color: Color(0xFFF5A623),
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        widget.product.rate, //that call rate
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                widget.product.name, // that call name
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Text(
+                                    "\$${widget.product.oldprice}", // that call old price
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black38,
+                                      decoration: TextDecoration.lineThrough,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    "\$${widget.product.price.toStringAsFixed(2)}", // that call final price
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFE53935),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Text(
+                                      "\%${widget.product.discount}", // that call discount
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  const Text(
+                                    '100+ Sold',
+                                    style: TextStyle(
+                                      color: Colors.black45,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 18),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Size',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          children: widget
+                                              .product
+                                              .size // use map for get data from controller
+                                              .map(
+                                                (item) => Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                        right: 10,
+                                                      ),
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      _selectedSize = item;
+                                                      setState(() {
+                                                        _selectedSize
+                                                            .toString();
+                                                      });
+                                                      log(
+                                                        _selectedSize
+                                                            .toString(),
+                                                      );
+                                                    },
+                                                    child: Container(
+                                                      width: 34,
+                                                      height: 34,
+                                                      alignment:
+                                                          Alignment.center,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color: Colors.white,
+                                                        border: Border.all(
+                                                          color:
+                                                              _selectedSize ==
+                                                                  item
+                                                              ? Colors.blue
+                                                              : Colors.black12,
+                                                        ),
+                                                        //border: Border.all(color: selected ? Colors.black : Colors.black26),
+                                                      ),
+                                                      child: Text(
+                                                        item,
+                                                        style: TextStyle(
+                                                          //color: selected ? Colors.white : Colors.black87,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          fontSize: 13,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                              .toList(),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Color',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Row(
+                                        children: widget
+                                            .product
+                                            .color // use asMap so we keep the index for image/description lookup
+                                            .asMap()
+                                            .entries
+                                            .map((entry) {
+                                              final index = entry.key;
+                                              final item = entry.value;
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                  left: 8,
+                                                ),
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _selectedColorIndex =
+                                                          index;
+                                                    });
+                                                    log(
+                                                      "selected color: $item (index $index)",
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    width: 22,
+                                                    height: 22,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      color: _costom_colors(
+                                                        item,
+                                                      ),
+                                                      border: Border.all(
+                                                        color:
+                                                            _selectedColorIndex ==
+                                                                index
+                                                            ? Colors.red
+                                                            : Colors.blue,
+                                                        width: 2,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            })
+                                            .toList(),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                "Decription",
+                                style: TextStyle(
+                                  fontSize: 23,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              AppText(
+                                text: widget
+                                    .product
+                                    .description[_selectedColorIndex], // description for the selected color
+                                maxlin: 10,
+                                fontWeight: FontWeight.normal,
+                              ),
+                              const SizedBox(height: 8),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
-            _buildBottomBar(),
+            _buildBottomBar(), // this is BottmBar  that costom already
           ],
         ),
       ),
     );
   }
-
   Widget _buildAppBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -68,216 +347,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             onPressed: () {},
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildImage() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        height: 320,
-        decoration: BoxDecoration(
-          //border: Border.all(color: const Color(0xFF3B82F6), width: 2),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        alignment: Alignment.center,
-        child: Image.asset(
-          'assets/image/argentina.jpg',
-          fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) =>
-              const Icon(Icons.image_outlined, size: 64, color: Colors.black26),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoCard() {
-    return Container(
-      margin: const EdgeInsets.only(top: 20),
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 16,
-            offset: Offset(0, -4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Expanded(
-                child: Text(
-                  'H&M',
-                  style: TextStyle(fontSize: 15, color: Colors.black54),
-                ),
-              ),
-              Row(
-                children: const [
-                  Icon(Icons.star, size: 16, color: Color(0xFFF5A623)),
-                  SizedBox(width: 4),
-                  Text('4.3', style: TextStyle(fontWeight: FontWeight.w600)),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            'T-Shirt Tomorrow',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              const Text(
-                '\$100',
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.black38,
-                  decoration: TextDecoration.lineThrough,
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                '\$90',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE53935),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Text(
-                  '10%',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              const Text(
-                '100+ Sold',
-                style: TextStyle(color: Colors.black45, fontSize: 13),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Size',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(children: _sizes.map(_buildSizeChip).toList()),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Color',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: List.generate(
-                      _colors.length,
-                      (i) => _buildColorDot(i),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Description',
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Stay stylish and comfortable with this modern jacket, '
-            'designed for everyday wear and all season versatility. '
-            'Made from high-quality materials, it offers a comfortable '
-            'fit while providing warmth and durability. The jacket '
-            'features a sleek design with a front zipper closure, '
-            'practical pockets for convenience, and a fashionable look '
-            'that pairs perfectly with jeans, trousers, or casual outfits.',
-            style: TextStyle(
-              fontSize: 13.5,
-              height: 1.5,
-              color: Colors.black54,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSizeChip(String size) {
-    final selected = size == _selectedSize;
-    return Padding(
-      padding: const EdgeInsets.only(right: 10),
-      child: GestureDetector(
-        onTap: () => setState(() => _selectedSize = size),
-        child: Container(
-          width: 34,
-          height: 34,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: selected ? Colors.black : Colors.white,
-            border: Border.all(color: selected ? Colors.black : Colors.black26),
-          ),
-          child: Text(
-            size,
-            style: TextStyle(
-              color: selected ? Colors.white : Colors.black87,
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildColorDot(int index) {
-    final selected = index == _selectedColorIndex;
-    return Padding(
-      padding: const EdgeInsets.only(left: 8),
-      child: GestureDetector(
-        onTap: () => setState(() => _selectedColorIndex = index),
-        child: Container(
-          width: 22,
-          height: 22,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: _colors[index],
-            border: selected ? Border.all(color: Colors.black, width: 2) : null,
-          ),
-        ),
       ),
     );
   }
@@ -340,5 +409,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ],
       ),
     );
+  }
+
+  _costom_colors(String text) {
+    switch (text.toLowerCase()) {
+      case "gray":
+        return Colors.grey;
+      case "blue":
+        return Colors.blue;
+      case "red":
+        return Colors.red;
+      case "yellow":
+        return Colors.yellow;
+      case "black":
+        return Colors.black;
+      case "pink":
+        return Colors.pinkAccent;
+      default:
+        return Colors.grey; // fallback so it never renders null/invalid
+    }
   }
 }
