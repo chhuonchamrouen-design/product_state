@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:project/util/app_text.dart';
+
 class Cartdscreen extends StatefulWidget {
-const Cartdscreen({super.key});
+  const Cartdscreen({super.key});
   @override
   State<Cartdscreen> createState() => _CartdscreenState();
 }
+
 class _CartdscreenState extends State<Cartdscreen> {
   @override
   Widget build(BuildContext context) {
@@ -100,7 +102,13 @@ class _CartdscreenState extends State<Cartdscreen> {
                     children: [
                       Row(
                         children: [
-                          Expanded(child: Text("Spain jersey")),
+                          Expanded(
+                            child: Text(
+                              maxLines: 1,
+                              "Spain jersey",
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                           Icon(Icons.delete, color: Colors.red.shade200),
                         ],
                       ),
@@ -157,7 +165,13 @@ class _CartdscreenState extends State<Cartdscreen> {
                       Text("Size: M"),
                       Row(
                         children: [
-                          Expanded(child: Text("Colors: White")),
+                          Expanded(
+                            child: Text(
+                              maxLines: 1,
+                              "Colors: White",
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                           Icon(Icons.add),
                           Text("0"),
                           Icon(Icons.remove),
@@ -198,7 +212,13 @@ class _CartdscreenState extends State<Cartdscreen> {
                     children: [
                       Row(
                         children: [
-                          Expanded(child: Text("Spain jersey")),
+                          Expanded(
+                            child: Text(
+                              maxLines: 1,
+                              "Spain jersey",
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                           Icon(Icons.delete, color: Colors.red.shade200),
                         ],
                       ),
@@ -255,7 +275,13 @@ class _CartdscreenState extends State<Cartdscreen> {
                       Text("Size: M"),
                       Row(
                         children: [
-                          Expanded(child: Text("Colors: White")),
+                          Expanded(
+                            child: Text(
+                              maxLines: 1,
+                              "Colors: White",
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                           Icon(Icons.add),
                           Text("0"),
                           Icon(Icons.remove),
@@ -300,7 +326,13 @@ class _CartdscreenState extends State<Cartdscreen> {
                         children: [
                           Row(
                             children: [
-                              Expanded(child: Text("Spain jersey")),
+                              Expanded(
+                                child: Text(
+                                  maxLines: 1,
+                                  "Spain jersey",
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
                               Icon(Icons.delete, color: Colors.red.shade200),
                             ],
                           ),

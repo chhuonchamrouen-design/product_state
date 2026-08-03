@@ -9,25 +9,28 @@ import 'package:project/controller/controllmode.dart';
 import 'package:project/util/app_text.dart';
 import 'package:project/view/home/product_detail_screen.drt.dart';
 import 'package:provider/provider.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   @override
   State<HomePage> createState() => _HomePageState();
 }
+
 class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // dispatch the event so ProductBloc actually loads data from ProductController
-    context.read<ProductBloc>().add(LoadProduct()); //use for bloc
+    context.read<ProductBloc>().add(
+      LoadProduct(),
+    ); //use for bloc read and add to load
   }
-  //final controller = Provider.of<Controllmode>(context);
+
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<Controllmode>(context); // use for changeMode
     return Scaffold(
+      drawer: Drawer(),
       appBar: AppBar(
-        leading: IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
         title: const Text(
           "Shop Sport",
           style: TextStyle(
@@ -37,6 +40,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         centerTitle: true,
+        //that test DartMode
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
           Switch(
@@ -53,7 +57,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),//space
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
@@ -117,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            // image slideshow
+            // image slideshow pion importance
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: ClipRRect(
@@ -228,7 +232,7 @@ class _HomePageState extends State<HomePage> {
                           childAspectRatio: 0.80, //space  between pic name...
                         ),
                     itemBuilder: (context, index) {
-                      final product = state.allProduct[index];
+                      final product = state.allProduct[index];//get data form state
                       return Container(
                         decoration: BoxDecoration(
                           color: Colors.blueGrey[50],
@@ -243,11 +247,11 @@ class _HomePageState extends State<HomePage> {
                                 //use ClipRRect for borderon the pic
                                 ClipRRect(
                                   borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(12),
+                                  top: Radius.circular(12),
                                   ),
                                   child: Image.asset(
                                     product
-                                        .image[0], // show image at index 0 or first
+                                    .image[0], // show image at index 0 or first
                                     height: 170,
                                     width: double.infinity,
                                     fit: BoxFit.contain,
@@ -366,7 +370,6 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
-            //const SizedBox(height: 20),
           ],
         ),
       ),
