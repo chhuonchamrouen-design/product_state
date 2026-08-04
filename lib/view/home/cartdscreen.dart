@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:project/util/app_text.dart';
-
 class Cartdscreen extends StatefulWidget {
-  const Cartdscreen({super.key});
-  @override
+const Cartdscreen({super.key});
+@override
   State<Cartdscreen> createState() => _CartdscreenState();
 }
-
 class _CartdscreenState extends State<Cartdscreen> {
   @override
   Widget build(BuildContext context) {
@@ -15,8 +13,8 @@ class _CartdscreenState extends State<Cartdscreen> {
       appBar: AppBar(
         leading: IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back_ios)),
         title: Text(
-          "Product cart",
-          style: TextStyle(fontSize: 22, color: Colors.black),
+        "Product cart",
+        style: TextStyle(fontSize: 22, color: Colors.black),
         ),
       ),
       body: ListView(
@@ -64,7 +62,7 @@ class _CartdscreenState extends State<Cartdscreen> {
                             Text("0"),
                             Icon(Icons.remove),
                           ],
-                        ),
+                      ),
                       ],
                     ),
                   ),
@@ -73,7 +71,6 @@ class _CartdscreenState extends State<Cartdscreen> {
               ),
             ),
           ),
-
           Container(
             margin: EdgeInsets.only(bottom: 16),
             padding: EdgeInsets.all(12),

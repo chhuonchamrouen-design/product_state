@@ -1,21 +1,10 @@
 import 'package:project/model/product_model.dart';
 class CartModel {
-  int code;
-  String name;
-  double price;
-  String image;
-  int quantity;
+  ProductModel? product;//get productModel like name image  that don't change
+  int quantity;//value must change 
   String? size;
   String? color;
-  CartModel({
-    required this.code,
-    required this.name,
-    required this.price,
-    required this.image,
-    this.quantity = 1,
-    required this.color,
-    required this.size,
-  });
+  CartModel({this.quantity = 1, this.color, this.size, required this.product});
   CartModel copyItem({
     ProductModel? product,
     String? color,
@@ -23,13 +12,10 @@ class CartModel {
     int? quantity,
   }) {
     return CartModel(
-      code: code,
-      name: name,
-      price: price,
-      image: image,
+      product: product,
       color: color,
       size: size,
-      quantity: quantity=1
+      quantity: quantity = 1,
     );
   }
 }

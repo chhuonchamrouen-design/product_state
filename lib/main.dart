@@ -4,11 +4,9 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:project/Main_home.dart';
 import 'package:project/bloc/product_bloc.dart';
 import 'package:project/bloc/product_event.dart';
+import 'package:project/bloc/product_state.dart';
 import 'package:project/controller/controllmode.dart';
-import 'package:project/view/home/cartdscreen.dart';
-import 'package:project/view/home/home_page.dart';
 import 'package:provider/provider.dart';
-
 void main() {
   runApp(
     ChangeNotifierProvider(
@@ -17,7 +15,6 @@ void main() {
     ),
   );
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override

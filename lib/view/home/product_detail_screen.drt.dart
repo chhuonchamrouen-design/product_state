@@ -1,20 +1,49 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:project/bloc/product_bloc.dart';
+import 'package:project/bloc/product_event.dart';
 import 'package:project/bloc/product_state.dart';
 import 'package:project/model/product_model.dart';
 import 'package:project/util/app_text.dart';
+
 class ProductDetailScreen extends StatefulWidget {
   final ProductModel product;
   const ProductDetailScreen({super.key, required this.product});
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
 }
+
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  String? _selectedSize;
-  int _selectedColorIndex = 0; 
+  String _selectedSize = "";
+  int _selectedColorIndex = 0;
   bool _isFavorite = false;
+  void addCart() {
+    final quantity = context
+        .read<ProductBloc>()
+        .state
+        .quantity; //use for update ui
+    if (_selectedSize.isEmpty) {
+      Get.snackbar("Message", "Please select size");
+    } else if (_selectedColorIndex.isNull) {
+      Get.snackbar("Message", "Please select colors");
+    } else {
+      context.read<ProductBloc>().add(
+        Addcart(
+          color: _selectedColorIndex.toString(),
+          product: widget.product,
+          size: _selectedSize,
+          quantity: quantity,
+        ),
+      );
+      log(
+        "Code : ${widget.product.code}\nSize:${_selectedSize}\nColor:${_selectedColorIndex.toString()}\nQuantity : ${quantity}",
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,10 +52,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildAppBar(context), 
+            _buildAppBar(context),
             Expanded(
               child: SingleChildScrollView(
-               
                 child: BlocBuilder<ProductBloc, ProductState>(
                   builder: (context, state) {
                     return Column(
@@ -97,12 +125,75 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 ],
                               ),
                               const SizedBox(height: 4),
-                              Text(
-                                widget.product.name, // that call name
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    widget.product.name, // that call name
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  // Expanded(child: )
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(1),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            context.read<ProductBloc>().add(
+                                              Decrement(),
+                                            );
+                                          },
+                                          child: Icon(
+                                            Icons.remove,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 5),
+                                      AppText(
+                                        text: context
+                                            .read<ProductBloc>()
+                                            .state
+                                            .quantity
+                                            .toString(),
+                                      ),
+                                      SizedBox(width: 5),
+                                      Container(
+                                        padding: EdgeInsets.all(1),
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            context.read<ProductBloc>().add(
+                                              Increment(),
+                                            );
+                                          },
+                                          child: Icon(
+                                            Icons.add,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        //child: Icon(Icons.add),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 10),
                               Row(
@@ -320,6 +411,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
     );
   }
+
   Widget _buildAppBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -368,7 +460,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         children: [
           Expanded(
             child: OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                addCart();
+              },
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 side: const BorderSide(color: Colors.black26),
@@ -377,6 +471,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
               ),
               child: const Text(
+                //Addcart();
                 'Add Cart',
                 style: TextStyle(
                   color: Colors.black87,

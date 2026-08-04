@@ -1,3 +1,4 @@
+
 import 'package:project/model/cart_model.dart';
 import 'package:project/model/product_model.dart';
 class ProductState {
@@ -7,23 +8,38 @@ class ProductState {
   final ProductModel? detailproduct;
   //cart
   final List<CartModel> cartitem;
+  final int quantity;
   //this constuter
-  ProductState({required this.allProduct, required this.detailproduct,required this.cartitem});
+  ProductState({
+    required this.allProduct,
+    required this.detailproduct,
+    required this.cartitem,
+    this.quantity = 1,
+  });
+  //create object by productstate
   factory ProductState.init() {
-    return ProductState(allProduct: [], detailproduct: null,cartitem: []);
+    return ProductState(
+      allProduct: [],
+      detailproduct: null,
+      cartitem: [],
+      quantity: 1,
+    );
   }
   List<String> get category {
     return allProduct.map((item) => item.category).toSet().toList();
   }
-  // both params optional now, and names match what's used in the body
-    ProductState copy({
+  //new object by productstate get some product you want
+  ProductState copy({
     List<ProductModel>? allProduct,
     ProductModel? detailProduct,
+    List<CartModel>? cartItem,
+    int? quantity,
   }) {
     return ProductState(
       allProduct: allProduct ?? this.allProduct,
       detailproduct: detailProduct ?? this.detailproduct,
-      cartitem: cartitem ?? this.cartitem,
+      cartitem: cartItem ?? this.cartitem,
+      quantity: quantity ?? this.quantity,
     );
   }
 }
