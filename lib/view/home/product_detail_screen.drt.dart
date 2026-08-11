@@ -8,6 +8,7 @@ import 'package:project/bloc/product_event.dart';
 import 'package:project/bloc/product_state.dart';
 import 'package:project/model/product_model.dart';
 import 'package:project/util/app_text.dart';
+import 'package:project/view/cart/cart_page.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final ProductModel product;
@@ -18,29 +19,31 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   String _selectedSize = "";
-  int _selectedColorIndex = 0;
+  String _selectedColorIndex = "";
   bool _isFavorite = false;
   void addCart() {
-    final quantity = context
-        .read<ProductBloc>()
-        .state
-        .quantity; //use for update ui
-    if (_selectedSize.isEmpty) {
-      Get.snackbar("Message", "Please select size");
-    } else if (_selectedColorIndex.isNull) {
-      Get.snackbar("Message", "Please select colors");
-    } else {
-      context.read<ProductBloc>().add(
-        Addcart(
-          color: _selectedColorIndex.toString(),
-          product: widget.product,
-          size: _selectedSize,
-          quantity: quantity,
-        ),
-      );
-      log(
-        "Code : ${widget.product.code}\nSize:${_selectedSize}\nColor:${_selectedColorIndex.toString()}\nQuantity : ${quantity}",
-      );
+    int quantity = context.read<ProductBloc>().state.quantity;
+    try {
+      if (_selectedSize.isEmpty) {
+        Get.snackbar("Message", "Pleasse Select Size");
+      } else if (_selectedSize.isEmpty) {
+        Get.snackbar("Message", "Pleasse Select Color");
+      } else {
+        context.read<ProductBloc>().add(
+          AddCartEvent(
+            color: _selectedColorIndex,
+            product: widget.product,
+            size: _selectedSize,
+            quantity: quantity,
+          ),
+        );
+        context.read<ProductBloc>().add(ResetQuantityEvent());
+        log(
+          "Code : ${widget.product.code}\nSize:${_selectedSize}\nColor:${_selectedColorIndex}\nQuantity : ${quantity}\nPrice : ${widget.product.price}",
+        );
+      }
+    } catch (e) {
+      log(e.toString());
     }
   }
 
@@ -71,7 +74,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             child: Image.asset(
                               widget
                                   .product
-                                  .image[_selectedColorIndex], // image for the selected color
+                                  .image, // image for the selected color
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -152,7 +155,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                         child: GestureDetector(
                                           onTap: () {
                                             context.read<ProductBloc>().add(
-                                              Decrement(),
+                                              Descrement(),
                                             );
                                           },
                                           child: Icon(
@@ -322,58 +325,49 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const Text(
+                                      Text(
                                         'Color',
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
                                           fontSize: 15,
                                         ),
                                       ),
-                                      const SizedBox(height: 10),
+                                      SizedBox(height: 10),
                                       Row(
-                                        children: widget
-                                            .product
-                                            .color // use asMap so we keep the index for image/description lookup
-                                            .asMap()
-                                            .entries
-                                            .map((entry) {
-                                              final index = entry.key;
-                                              final item = entry.value;
-                                              return Padding(
-                                                padding: const EdgeInsets.only(
+                                        children: widget.product.color
+                                            .map(
+                                              (item) => Padding(
+                                                padding: EdgeInsets.only(
                                                   left: 8,
                                                 ),
                                                 child: GestureDetector(
                                                   onTap: () {
                                                     setState(() {
                                                       _selectedColorIndex =
-                                                          index;
+                                                          item;
                                                     });
-                                                    log(
-                                                      "selected color: $item (index $index)",
-                                                    );
                                                   },
                                                   child: Container(
                                                     width: 22,
                                                     height: 22,
                                                     decoration: BoxDecoration(
                                                       shape: BoxShape.circle,
-                                                      color: _costom_colors(
+                                                      color: _costomcolors(
                                                         item,
                                                       ),
                                                       border: Border.all(
                                                         color:
                                                             _selectedColorIndex ==
-                                                                index
-                                                            ? Colors.red
-                                                            : Colors.blue,
+                                                                item
+                                                            ? Colors.blue
+                                                            : Colors.black,
                                                         width: 2,
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                              );
-                                            })
+                                              ),
+                                            )
                                             .toList(),
                                       ),
                                     ],
@@ -389,9 +383,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 ),
                               ),
                               AppText(
-                                text: widget
-                                    .product
-                                    .description[_selectedColorIndex], // description for the selected color
+                                text: widget.product.description,
                                 maxlin: 10,
                                 fontWeight: FontWeight.normal,
                               ),
@@ -434,9 +426,34 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ),
             onPressed: () => setState(() => _isFavorite = !_isFavorite),
           ),
-          IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined),
-            onPressed: () {},
+          BlocBuilder<ProductBloc, ProductState>(
+            builder: (context, state) {
+              return Stack(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_cart_outlined),
+                    onPressed: () {
+                      Get.to(Cartdscreen());
+                    },
+                  ),
+                  Positioned(
+                    top: 3,
+                    right: 10,
+                    child: Container(
+                      padding: EdgeInsets.all(1),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.blue,
+                      ),
+                      child: Text(
+                        state.cartItem.length.toString(),
+                        style: TextStyle(fontSize: 10, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -462,6 +479,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             child: OutlinedButton(
               onPressed: () {
                 addCart();
+                //Get.to(Cartdscreen());
               },
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -483,7 +501,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           const SizedBox(width: 14),
           Expanded(
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                //Addcart();j
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF7C8CE0),
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -506,7 +526,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  _costom_colors(String text) {
+  _costomcolors(String text) {
     switch (text.toLowerCase()) {
       case "gray":
         return Colors.grey;

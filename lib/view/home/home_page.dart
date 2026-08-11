@@ -15,6 +15,7 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
+
 class _HomePageState extends State<HomePage> {
   @override
   void initState() {
@@ -56,7 +57,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(16.0),//space
+              padding: const EdgeInsets.all(16.0), //space
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
@@ -171,7 +172,6 @@ class _HomePageState extends State<HomePage> {
               child: SizedBox(
                 height: 50,
                 child: BlocBuilder<ProductBloc, ProductState>(
-                  // point that importand
                   builder: (context, state) {
                     final categories = state.allProduct
                         .map((p) => p.category)
@@ -228,10 +228,11 @@ class _HomePageState extends State<HomePage> {
                           crossAxisCount: 2,
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10,
-                          childAspectRatio: 0.80, //space  between pic name...
+                          childAspectRatio: 0.82, //space  between pic name...
                         ),
                     itemBuilder: (context, index) {
-                      final product = state.allProduct[index];//get data form state
+                      final product =
+                          state.allProduct[index]; //get data form state
                       return Container(
                         decoration: BoxDecoration(
                           color: Colors.blueGrey[50],
@@ -243,25 +244,20 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Stack(
                               children: [
-                                //use ClipRRect for borderon the pic
                                 ClipRRect(
                                   borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(12),
+                                    top: Radius.circular(12),
                                   ),
                                   child: Image.asset(
-                                    product
-                                    .image[0], // show image at index 0 or first
+                                    product.image,
                                     height: 170,
                                     width: double.infinity,
                                     fit: BoxFit.contain,
                                   ),
                                 ),
                                 Positioned(
-                                  //top: 10,
-                                  //left: 10,
                                   child: Container(
                                     padding: EdgeInsets.symmetric(
-                                      //use for space for container
                                       vertical: 2,
                                       horizontal: 10,
                                     ),

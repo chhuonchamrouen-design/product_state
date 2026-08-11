@@ -1,7 +1,8 @@
 import 'package:project/model/product_model.dart';
+
 class CartModel {
-  ProductModel? product;//get productModel like name image  that don't change
-  int quantity;//value must change 
+  ProductModel? product;
+  int quantity;
   String? size;
   String? color;
   CartModel({this.quantity = 1, this.color, this.size, required this.product});
@@ -12,10 +13,10 @@ class CartModel {
     int? quantity,
   }) {
     return CartModel(
-      product: product,
-      color: color,
-      size: size,
-      quantity: quantity = 1,
+      product: product ?? this.product,
+      color: color ?? this.color,
+      size: size ?? this.size,
+      quantity: quantity ?? this.quantity,
     );
   }
 }

@@ -13,7 +13,7 @@ class _MainHomePageState extends State<MainHomePage> {
   final List<Widget> pages = const [
     HomePage(),
     FavoriteScreen(),
-    CartScreen(),
+    Cartdscreen(),
     ProfileScreen(),
   ];
   @override
