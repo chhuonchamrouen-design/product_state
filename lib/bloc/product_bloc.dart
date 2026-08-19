@@ -7,13 +7,13 @@ import 'package:project/model/cart_model.dart';
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final ProductController product = ProductController();
   ProductBloc() : super(ProductState.init()) {
-    //show prodcut
+    //show product
     on<LoadProduct>((event, emit) {
       onProduct(event, emit);
     });
     //detailProduct
-    on<DetailProduct>((even, emit) {
-      onDetailProduct(even, emit);
+    on<DetailProduct>((event, emit) {
+      onDetailProduct(event, emit);
     });
     //CartItem
     on<AddCartEvent>((event, emit) {
@@ -35,16 +35,27 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<RemoveCartEvent>((event, emit) {
       onRemove(event, emit);
     });
+    //ResetQuantity
     on<ResetQuantityEvent>((event, emit) {
       onReset(event, emit);
     });
+    //Filter by category
+    on<FilterCategoryEvent>((event, emit) {
+      onFilter(event, emit);
+    });
   }
+
   void onProduct(LoadProduct event, Emitter emit) {
-    emit(state.copy(allproduct: product.products));
+    emit(
+      state.copy(
+        allProduct: product.products,
+        filtercategory: product.products,
+      ),
+    );
   }
 
   void onDetailProduct(DetailProduct event, Emitter emit) {
-    emit(state.copy(detailProduct: event.detailproduct));
+    emit(state.copy(detailproduct: event.detailproduct));
   }
 
   void onAddToCart(AddCartEvent event, Emitter emit) {
@@ -101,9 +112,28 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     final remove = state.cartItem
         .where((item) => item.product!.code != event.cartModel.product!.code)
         .toList();
-    return emit(state.copy(cartItem: remove));
+    emit(state.copy(cartItem: remove));
   }
-  void onReset(ResetQuantityEvent even, Emitter) {
+
+  //ResetQuantity
+  void onReset(ResetQuantityEvent event, Emitter emit) {
     emit(state.copy(quantity: 1));
+  }
+
+  //filter
+  void onFilter(FilterCategoryEvent event, Emitter emit) {
+    if (event.category == "All") {
+      emit(
+        state.copy(
+          filtercategory: state.allProduct,
+          categories: event.category,
+        ),
+      );
+      return;
+    }
+    final category = state.allProduct
+        .where((item) => item.category == event.category)
+        .toList();
+    emit(state.copy(filtercategory: category, categories: event.category));
   }
 }

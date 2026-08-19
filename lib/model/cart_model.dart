@@ -1,5 +1,4 @@
 import 'package:project/model/product_model.dart';
-
 class CartModel {
   ProductModel? product;
   int quantity;

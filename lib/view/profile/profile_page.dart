@@ -1,19 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:project/util/app_text.dart';
-//import 'package:project_state11_12/util/app_text.dart';
+import 'package:flutter/widgets.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: AppText(text: "Profile Scren", size: 20)),
+      appBar: AppBar(
+        leading: Icon(Icons.arrow_back),
+        title: Text("Profile", style: TextStyle(color: Colors.blue)),
+        actions: [Icon(Icons.settings)],
+        backgroundColor: Colors.blue,
+      ),
+      body: Column(
+        children: [
+          Container(
+            height: 200,
+            width: double.infinity,
+            color: Colors.blue,
+            child: Stack(
+              children: [
+                Container(
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(40),
+                    color: Colors.white,
+                  ),
+                ),
+                Positioned(top: 10, left: 20, right: 20, child: Text("Hiii")),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

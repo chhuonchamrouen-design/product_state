@@ -1,5 +1,6 @@
 import 'package:project/model/cart_model.dart';
 import 'package:project/model/product_model.dart';
+
 abstract class ProductEvent {}
 
 //show product
@@ -39,11 +40,17 @@ class UpdateQuantityCart extends ProductEvent {
   final int quantity;
   UpdateQuantityCart({required this.cartModel, required this.quantity});
 }
+
 //remove cart
 class RemoveCartEvent extends ProductEvent {
   final CartModel cartModel;
   RemoveCartEvent({required this.cartModel});
 }
-class ResetQuantityEvent extends ProductEvent{
-  
+
+class ResetQuantityEvent extends ProductEvent {}
+
+//filter by category (renamed from FiltterCatagoryEvent -> fixed spelling)
+class FilterCategoryEvent extends ProductEvent {
+  final String category;
+  FilterCategoryEvent({required this.category});
 }

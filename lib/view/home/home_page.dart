@@ -9,27 +9,23 @@ import 'package:project/controller/controllmode.dart';
 import 'package:project/util/app_text.dart';
 import 'package:project/view/home/product_detail_screen.drt.dart';
 import 'package:provider/provider.dart';
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   @override
   State<HomePage> createState() => _HomePageState();
 }
-
 class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    context.read<ProductBloc>().add(
-      LoadProduct(),
-    ); //use for bloc read and add to load
+    context.read<ProductBloc>().add(LoadProduct());
   }
-
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<Controllmode>(context); // use for changeMode
+    final controller = Provider.of<Controllmode>(context);
+
     return Scaffold(
-      drawer: Drawer(),
+      drawer: const Drawer(),
       appBar: AppBar(
         title: const Text(
           "Shop Sport",
@@ -40,24 +36,23 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         centerTitle: true,
-        //that test DartMode
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
           Switch(
             value: controller.isDark,
-            onChanged: (Value) {
+            onChanged: (value) {
               controller.changeTheme();
             },
           ),
         ],
       ),
       body: SingleChildScrollView(
-        //use for scroll
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ========== Location Bar ==========
             Padding(
-              padding: const EdgeInsets.all(16.0), //space
+              padding: const EdgeInsets.all(16.0),
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
@@ -121,9 +116,10 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            // image slideshow pion importance
+
+            // ========== Image Slideshow ==========
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: ImageSlideshow(
@@ -132,6 +128,8 @@ class _HomePageState extends State<HomePage> {
                   initialPage: 0,
                   indicatorColor: Colors.blue,
                   indicatorBackgroundColor: Colors.grey,
+                  autoPlayInterval: 3000,
+                  isLoop: true,
                   children: [
                     Image.asset('assets/image/worl.jpg', fit: BoxFit.cover),
                     Image.asset(
@@ -140,18 +138,17 @@ class _HomePageState extends State<HomePage> {
                     ),
                     Image.asset('assets/image/lejend.jpg', fit: BoxFit.cover),
                   ],
-                  autoPlayInterval: 3000,
-                  isLoop: true,
                 ),
               ),
             ),
             const SizedBox(height: 16),
+            // ========== Popular Brand Title ==========
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppText(
+                  const AppText(
                     text: "Popular brand",
                     fontWeight: FontWeight.bold,
                     size: 22,
@@ -166,38 +163,60 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            // this use bolc for get data form controller
+
+            // ========== Category Chips (driven by Bloc state) ==========
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
               child: SizedBox(
                 height: 50,
                 child: BlocBuilder<ProductBloc, ProductState>(
                   builder: (context, state) {
-                    final categories = state.allProduct
-                        .map((p) => p.category)
-                        .toSet()
-                        .toList();
+                    if (state.category.length <= 1) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: categories.length,
+                      itemCount: state.category.length,
                       itemBuilder: (context, index) {
-                        final category = categories[index];
+                        final category = state.category[index];
+                        final isSelected =
+                            category == (state.categories ?? "All");
+
                         return Padding(
                           padding: const EdgeInsets.only(right: 10),
-                          child: Container(
-                            height: 50,
-                            padding: const EdgeInsets.symmetric(horizontal: 14),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              color: Colors.blue,
-                            ),
-                            child: Center(
-                              child: Text(
-                                category,
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                          child: GestureDetector(
+                            onTap: () {
+                              context.read<ProductBloc>().add(
+                                FilterCategoryEvent(category: category),
+                              );
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              height: 50,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: isSelected
+                                    ? Colors.blue
+                                    : Colors.grey[200],
+                                border: Border.all(
+                                  color: isSelected
+                                      ? Colors.blue
+                                      : Colors.grey.shade300,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  category,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.black87,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
@@ -209,30 +228,46 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+
+            // ========== Product Grid (driven by Bloc state) ==========
             BlocBuilder<ProductBloc, ProductState>(
               builder: (context, state) {
                 if (state.allProduct.isEmpty) {
                   return const Padding(
-                    padding: EdgeInsets.all(24.0),
+                    padding: EdgeInsets.all(40.0),
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
+                final filteredProducts =
+                    state.filtercategory ?? state.allProduct;
+                if (filteredProducts.isEmpty) {
+                  return const Padding(
+                    padding: EdgeInsets.all(40.0),
+                    child: Center(
+                      child: Text(
+                        "No products found in this category",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  );
+                }
+
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: state.allProduct.length,
+                    itemCount: filteredProducts.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          childAspectRatio: 0.82, //space  between pic name...
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.72,
                         ),
                     itemBuilder: (context, index) {
-                      final product =
-                          state.allProduct[index]; //get data form state
+                      final product = filteredProducts[index];
+
                       return Container(
                         decoration: BoxDecoration(
                           color: Colors.blueGrey[50],
@@ -242,6 +277,7 @@ class _HomePageState extends State<HomePage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            // Image + Discount badge
                             Stack(
                               children: [
                                 ClipRRect(
@@ -250,34 +286,37 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   child: Image.asset(
                                     product.image,
-                                    height: 170,
+                                    height: 160,
                                     width: double.infinity,
                                     fit: BoxFit.contain,
                                   ),
                                 ),
                                 Positioned(
+                                  top: 8,
+                                  left: 8,
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 2,
-                                      horizontal: 10,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 3,
+                                      horizontal: 8,
                                     ),
                                     decoration: BoxDecoration(
                                       color: Colors.red,
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: AppText(
-                                      //that call wiget Apptext
-                                      text:
-                                          "${product.discount.toString()}%", //call discount
+                                      text: "${product.discount}%",
                                       colors: Colors.white,
                                       fontWeight: FontWeight.bold,
+                                      size: 12,
                                     ),
                                   ),
                                 ),
                               ],
                             ),
+
+                            // Product Info
                             Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(10.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -287,26 +326,32 @@ class _HomePageState extends State<HomePage> {
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w600,
+                                      fontSize: 14,
                                     ),
                                   ),
+                                  const SizedBox(height: 4),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Icon(Icons.star, color: Colors.amber),
-                                      AppText(
-                                        text: product.rate,
-                                        colors: Colors.grey,
-                                        size: 15,
+                                      const Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                        size: 16,
                                       ),
-                                      SizedBox(width: 5),
+                                      const SizedBox(width: 4),
+                                      AppText(
+                                        text: product.rate.toString(),
+                                        colors: Colors.grey,
+                                        size: 13,
+                                      ),
+                                      const SizedBox(width: 6),
                                       AppText(
                                         text: "View(${product.view})",
-                                        size: 15,
+                                        size: 13,
                                         colors: Colors.grey,
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 6),
                                   Row(
                                     children: [
                                       Text(
@@ -324,31 +369,28 @@ class _HomePageState extends State<HomePage> {
                                         style: const TextStyle(
                                           color: Colors.blueAccent,
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 13,
+                                          fontSize: 14,
                                         ),
                                       ),
-                                      Spacer(),
-                                      Container(
-                                        padding: EdgeInsets.all(2),
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue,
-                                          borderRadius: BorderRadius.circular(
-                                            20,
+                                      const Spacer(),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Get.to(
+                                            () => ProductDetailScreen(
+                                              product: product,
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.all(6),
+                                          decoration: const BoxDecoration(
+                                            color: Colors.blue,
+                                            shape: BoxShape.circle,
                                           ),
-                                        ),
-                                        child: GestureDetector(
-                                          //go to another page
-                                          //that show message
-                                          onTap: () {
-                                            Get.to(
-                                              ProductDetailScreen(
-                                                product: product,
-                                              ),
-                                            );
-                                          },
-                                          child: Icon(
+                                          child: const Icon(
                                             Icons.add,
                                             color: Colors.white,
+                                            size: 18,
                                           ),
                                         ),
                                       ),
@@ -365,6 +407,8 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
+
+            const SizedBox(height: 30),
           ],
         ),
       ),

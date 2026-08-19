@@ -4,17 +4,26 @@ import 'package:project/model/product_model.dart';
 class ProductState {
   //object show all product
   final List<ProductModel> allProduct;
-  //detail Prouct
+  //detail Product
   final ProductModel? detailproduct;
   //cart
   final List<CartModel> cartItem;
-  int quantity;
+  final int quantity;
+  final double total;
+  //filter all category
+  final List<ProductModel>? filtercategory;
+  final String? categories;
+
   ProductState({
     required this.allProduct,
     required this.detailproduct,
     required this.cartItem,
     this.quantity = 1,
+    this.total = 0.0,
+    this.categories,
+    this.filtercategory,
   });
+
   //create new object by productstate
   factory ProductState.init() {
     return ProductState(
@@ -22,42 +31,59 @@ class ProductState {
       detailproduct: null,
       cartItem: [],
       quantity: 1,
+      categories: "All",
+      filtercategory: [],
     );
   }
-  //List get name category
+
+  //List of category names, always including "All" first
   List<String> get category {
-    return allProduct.map((item) => item.category).toSet().toList();
+    final cats = allProduct.map((item) => item.category).toSet().toList();
+    return ["All", ...cats];
   }
 
   //new object by productstate get some product you want
   ProductState copy({
-    List<ProductModel>? allproduct,
-    ProductModel? detailProduct,
+    List<ProductModel>? allProduct,
+    ProductModel? detailproduct,
     List<CartModel>? cartItem,
     int? quantity,
+    double? total,
+    List<ProductModel>? filtercategory,
+    String? categories,
   }) {
     return ProductState(
-      allProduct: allproduct ?? this.allProduct,
-      detailproduct: detailProduct ?? this.detailproduct,
+      allProduct: allProduct ?? this.allProduct,
+      detailproduct: detailproduct ?? this.detailproduct,
       cartItem: cartItem ?? this.cartItem,
       quantity: quantity ?? this.quantity,
+      total: total ?? this.total,
+      categories: categories ?? this.categories,
+      filtercategory: filtercategory ?? this.filtercategory,
     );
   }
 
   double get gettotal => cartItem.fold(
     0.0,
-    (sum, itme) => sum += itme.quantity * itme.product!.price,
+    (sum, item) => sum + (item.quantity * item.product!.price),
   );
-  double devilery = 2;
+
+  final double devilery = 2;
+
+  // Fixed: tiers now step correctly instead of catching everything
+  // outside 60-90 (including empty carts) in the 25% branch.
   double dis() {
-    double dis = (gettotal > 60 && gettotal <= 70)
-        ? 10
-        : (gettotal > 70 && gettotal <= 80)
-        ? 15
-        : (gettotal > 80 && gettotal <= 90)
-        ? 20
-        : 25;
-    return dis = gettotal * dis / 100;
+    double percent = 0;
+    if (gettotal > 90) {
+      percent = 25;
+    } else if (gettotal > 80) {
+      percent = 20;
+    } else if (gettotal > 70) {
+      percent = 15;
+    } else if (gettotal > 60) {
+      percent = 10;
+    }
+    return gettotal * percent / 100;
   }
 
   double subtoal() {

@@ -9,25 +9,26 @@ import 'package:project/bloc/product_state.dart';
 import 'package:project/model/product_model.dart';
 import 'package:project/util/app_text.dart';
 import 'package:project/view/cart/cart_page.dart';
-
+import 'package:project/view/home/checkoutscreen.dart';
 class ProductDetailScreen extends StatefulWidget {
   final ProductModel product;
   const ProductDetailScreen({super.key, required this.product});
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
 }
-
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   String _selectedSize = "";
   String _selectedColorIndex = "";
   bool _isFavorite = false;
-  void addCart() {
+  bool addCart(){
     int quantity = context.read<ProductBloc>().state.quantity;
     try {
       if (_selectedSize.isEmpty) {
-        Get.snackbar("Message", "Pleasse Select Size");
-      } else if (_selectedSize.isEmpty) {
-        Get.snackbar("Message", "Pleasse Select Color");
+        Get.snackbar("Message", "Please Select Size");
+        return false;
+      } else if (_selectedColorIndex.isEmpty) {
+        Get.snackbar("Message", "Please Select Color");
+        return false;
       } else {
         context.read<ProductBloc>().add(
           AddCartEvent(
@@ -38,15 +39,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ),
         );
         context.read<ProductBloc>().add(ResetQuantityEvent());
-        log(
-          "Code : ${widget.product.code}\nSize:${_selectedSize}\nColor:${_selectedColorIndex}\nQuantity : ${quantity}\nPrice : ${widget.product.price}",
-        );
+        return true;
       }
     } catch (e) {
       log(e.toString());
+      return false;
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -501,8 +500,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           const SizedBox(width: 14),
           Expanded(
             child: ElevatedButton(
-              onPressed: () {
-                //Addcart();j
+              onPressed:(){
+                final bool added = addCart();
+                if (added){
+                  Get.to(Checkputscreen());
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF7C8CE0),
@@ -525,7 +527,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
     );
   }
-
   _costomcolors(String text) {
     switch (text.toLowerCase()) {
       case "gray":
@@ -541,7 +542,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       case "pink":
         return Colors.pinkAccent;
       default:
-        return Colors.grey; // fallback so it never renders null/invalid
+        return Colors.grey; 
     }
   }
 }

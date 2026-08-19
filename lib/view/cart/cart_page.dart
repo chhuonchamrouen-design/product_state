@@ -8,11 +8,13 @@ import 'package:project/bloc/product_bloc.dart';
 import 'package:project/bloc/product_event.dart';
 import 'package:project/bloc/product_state.dart';
 import 'package:project/util/app_text.dart';
+import 'package:project/view/home/checkoutscreen.dart';
 class Cartdscreen extends StatefulWidget {
   const Cartdscreen({super.key});
   @override
   State<Cartdscreen> createState() => _CartdscreenState();
 }
+
 class _CartdscreenState extends State<Cartdscreen> {
   @override
   Widget build(BuildContext context) {
@@ -128,7 +130,6 @@ class _CartdscreenState extends State<Cartdscreen> {
                             style: TextStyle(color: Colors.red),
                           ),
                           Text("Size:${item.size!}"),
-
                           Row(
                             children: [
                               Expanded(
@@ -197,11 +198,8 @@ class _CartdscreenState extends State<Cartdscreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _summaryRow("Total", state.gettotal),
-                //const SizedBox(height: 6),
                 _summaryRow("Discount", state.dis()),
-                //const SizedBox(height: 6),
                 _summaryRow("Delivery", state.devilery),
-
                 Divider(),
                 _summaryRow(
                   "Sub Total",
@@ -220,7 +218,12 @@ class _CartdscreenState extends State<Cartdscreen> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      final double total = state.gettotal;
+                      if (total > 1) {
+                        Get.to(Checkputscreen());
+                      }
+                    },
                     child: const Text(
                       "Check out",
                       style: TextStyle(

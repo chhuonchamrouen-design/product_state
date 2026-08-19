@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:project/Main_home.dart';
+import 'package:project/auth/login_screen.dart';
 import 'package:project/bloc/product_bloc.dart';
 import 'package:project/bloc/product_event.dart';
-import 'package:project/bloc/product_state.dart';
 import 'package:project/controller/controllmode.dart';
-import 'package:project/view/cart/cart_page.dart';
-import 'package:project/view/home/home_page.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(
     ChangeNotifierProvider(
       create: (context) => Controllmode(),
@@ -33,7 +35,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData.light(),
         darkTheme: ThemeData.dark(),
         themeMode: themeProvider.isDark ? ThemeMode.dark : ThemeMode.light,
-        home: const MainHomePage(),
+        home: const LoginScreen(),
       ),
     );
   }

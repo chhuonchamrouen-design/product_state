@@ -14,7 +14,7 @@ class _MainHomePageState extends State<MainHomePage> {
     HomePage(),
     FavoriteScreen(),
     Cartdscreen(),
-    ProfileScreen(),
+  ProfilePage(),
   ];
   @override
   Widget build(BuildContext context) {
