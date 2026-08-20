@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:project/bloc/product_bloc.dart';
 import 'package:project/bloc/product_event.dart';
 import 'package:project/bloc/product_state.dart';
@@ -476,7 +475,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         children: [
           Expanded(
             child: OutlinedButton(
-              onPressed: () {
+              onPressed: (){
                 addCart();
                 //Get.to(Cartdscreen());
               },

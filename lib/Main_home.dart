@@ -3,18 +3,20 @@ import 'package:project/view/cart/cart_page.dart';
 import 'package:project/view/favarite/favarite_page.dart';
 import 'package:project/view/home/home_page.dart';
 import 'package:project/view/profile/profile_page.dart';
+
 class MainHomePage extends StatefulWidget {
   const MainHomePage({super.key});
   @override
   State<MainHomePage> createState() => _MainHomePageState();
 }
+
 class _MainHomePageState extends State<MainHomePage> {
   int currentPage = 0;
   final List<Widget> pages = const [
     HomePage(),
     FavoriteScreen(),
     Cartdscreen(),
-  ProfilePage(),
+    ProfileScreen(),
   ];
   @override
   Widget build(BuildContext context) {

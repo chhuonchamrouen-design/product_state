@@ -7,11 +7,14 @@ import 'package:project/auth/login_screen.dart';
 import 'package:project/bloc/product_bloc.dart';
 import 'package:project/bloc/product_event.dart';
 import 'package:project/controller/controllmode.dart';
+import 'package:project/view/addstudent/addstudent_screen.dart';
 import 'package:provider/provider.dart';
+import 'firebase/firebase_options.dart'; // 👈 បន្ថែមថ្មី
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(
     ChangeNotifierProvider(
@@ -25,9 +28,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<Controllmode>(
-      context,
-    ); //use for changeMode
+    final themeProvider = Provider.of<Controllmode>(context);
     return BlocProvider(
       create: (context) => ProductBloc()..add(LoadProduct()),
       child: GetMaterialApp(
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData.light(),
         darkTheme: ThemeData.dark(),
         themeMode: themeProvider.isDark ? ThemeMode.dark : ThemeMode.light,
-        home: const LoginScreen(),
+        home: const AddstudentScreen(),
       ),
     );
   }

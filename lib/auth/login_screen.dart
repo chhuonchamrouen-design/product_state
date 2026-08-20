@@ -102,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 32),
-
+                  
                   // Email field
                   TextFormField(
                     controller: _emailController,
@@ -162,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Login button
                   FilledButton(
                     onPressed: () {
-                      login();
+                      login();//go ot login screen
                     },
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),

@@ -16,7 +16,7 @@ class HomePage extends StatefulWidget {
 }
 class _HomePageState extends State<HomePage> {
   @override
-  void initState() {
+  void initState(){
     super.initState();
     context.read<ProductBloc>().add(LoadProduct());
   }
@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
           Switch(
             value: controller.isDark,
             onChanged: (value) {
-              controller.changeTheme();
+            controller.changeTheme();
             },
           ),
         ],
@@ -171,8 +171,8 @@ class _HomePageState extends State<HomePage> {
                 height: 50,
                 child: BlocBuilder<ProductBloc, ProductState>(
                   builder: (context, state) {
-                    if (state.category.length <= 1) {
-                      return const Center(child: CircularProgressIndicator());
+                  if (state.category.length <= 1) {
+                    return const Center(child: CircularProgressIndicator());
                     }
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,
@@ -180,8 +180,7 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (context, index) {
                         final category = state.category[index];
                         final isSelected =
-                            category == (state.categories ?? "All");
-
+                        category == (state.categories ?? "All");
                         return Padding(
                           padding: const EdgeInsets.only(right: 10),
                           child: GestureDetector(
@@ -238,8 +237,7 @@ class _HomePageState extends State<HomePage> {
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
-                final filteredProducts =
-                    state.filtercategory ?? state.allProduct;
+                final filteredProducts = state.filtercategory ?? state.allProduct;
                 if (filteredProducts.isEmpty) {
                   return const Padding(
                     padding: EdgeInsets.all(40.0),
